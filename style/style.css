@@ -8,10 +8,6 @@
   font-size: 20px;
 }
 
-body {
-  background-color: #f1f1f1;
-}
-
 .header {
   background-color: #09a787;
   display: flex;
@@ -60,11 +56,7 @@ body {
   transition: all 0.3s ease 0s;
 }
 
-.header .btn button:hover {
-  background-color: #e2f1f8;
-  color: #ffbc0e;
-  transform: scale(1.1);
-}
+
 
 .custom-form {
   background-color: #E1DDDA;
@@ -236,4 +228,61 @@ button:hover {
 
 .footer-text {
   color: #fff;
+}
+
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+header {
+  margin-bottom: 3rem;
+  height: 10rem;
+  display: flex;
+  align-items: center;
+}
+.nav {
+  height: 5rem;
+  background-color: #1ab192;
+  display: flex;
+  justify-content: end;
+  width: 100%;
+}
+.nav .links_container {
+  display: flex;
+  width: 76.5%;
+  justify-content: space-evenly;
+}
+.nav .links_container {
+  display: flex;
+  width: 76.5%;
+  justify-content: space-evenly;
+}
+.container_logo {
+  background-color: #ffffff;
+  width: 25rem;
+  text-align: center;
+  position: relative;
+  top: -1.5rem;
+  height: 8rem;
+}
+.container_logo img {
+  width: 70%;
+}
+@media (min-width: 992px) {
+  .container_logo img {
+    width: 60%;
+  }
+}
+.container_login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.container_login .login {
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  color: #ffffff;
 }
