@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $url = "http://localhost/biblioteca/src/index.php";
                 $tiempoespera = 1;
                 header("refresh: $tiempoespera; url=$url");
-                exit(); 
+                exit();
             } else {
                 $message = 'Ha ocurrido un error al registrar al alumno';
             }
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 try {
     $sql = "SELECT id_carrera, nombre_carrera FROM carrera";
-    $result = $dbh->query($sql); // Use the PDO connection object to execute the query
+    $result = $dbh->query($sql); 
 } catch (PDOException $e) {
     die("Error en la consulta de carreras: " . $e->getMessage());
 }
@@ -61,31 +61,18 @@ try {
 <head>
     <title>Registro Alumno</title>
     <link rel="stylesheet" href="../style/style.css">
-    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
-    
+    <link rel="stylesheet" href="output.css">
 </head>
 
 <body>
-    <header class="center">
-        <nav class="nav">
-            <div class="links_container">
-                <div class="container_logo">
-                    <a href="index.php">
-                        <img src="../img/UTTN_princ.png" class="uttn_logo" alt=" Uttn logo" />
-                    </a>
-                </div>
-                <div class="container_login center"> <!-- ( center )is a helper class that align / center the items  -->
-                    <a href="login_admin.php" class="login" style="color: white">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22">
-                            <path fill="none" d="M0 0h24v24H0z"></path>
-                            <path fill="white" d="M4 15h2v5h12V4H6v5H4V3a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-6zm6-4V8l5 4-5 4v-3H2v-2h8z">
-                            </path>
-                        </svg>
-                        Iniciar Sesión</a>
-                </div>
-            </div>
-        </nav>
-    </header>
+    <div class="header bg-green-600 flex justify-between">
+        <div>
+            <a href="index.php"><button type="button" class="text-white bg-black hover:700 font-bold py-2 px-4 rounded">Inicio</button></a>
+        </div>
+        <div class="flex justify-center">
+            <img class="my-0 transition duration-300 transform hover:scale-110" src="../img/UTTN_princ.png" alt="Logo" style="width: 150px; height: auto;">
+        </div>
+    </div>
     <h1>Formulario de Alumnos</h1>
     <?php if (!empty($message)) { ?>
         <div class="message"><?php echo $message; ?></div>

@@ -1,37 +1,26 @@
 <?php
 session_start();
-// Proceso de logout
-if (isset($_POST['logout'])) {
-    // Destruir todas las variables de sesión
-    session_unset();
 
-    // Destruir la sesión
-    session_destroy();
-
-    // Redirigir al inicio de sesión
+if (!isset($_SESSION['user'])) {
     header("Location: login_admin.php");
     exit();
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Vista de Administrador</title>
+    <link rel="stylesheet" href="../style/style.css">
+    <link rel="stylesheet" href="output.css">
 </head>
-
 <body>
+    <div class="header bg-green-600 h-20 items-center justify-center px-10">
+        <img class="h-16 w-auto" src="../img/UTTN_princ.png" alt="Logo" style="width: 150px;" height="auto;">
+        <a href="logout.php" class="text-white bg-black hover:bg-gray-700 font-bold py-2 px-4 rounded">Cerrar Sesión</a>
+    </div>
     <h1>Vista Admin</h1>
-
-
-    <!-- Agrega este código en la página donde deseas tener el botón de logout -->
-<form method="POST" class="custom-form">
-    <input class="bg-red-600" type="submit" name="logout" value="Cerrar sesión">
-</form>
-
+    
 </body>
-
 </html>

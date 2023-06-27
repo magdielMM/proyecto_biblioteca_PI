@@ -1,6 +1,8 @@
 <?php
 require '../database/conexion.php';
 
+$message = '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $_POST['user'];
     $password = $_POST['password'];
@@ -13,14 +15,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute();
 
         if ($stmt->rowCount() > 0) {
-            // Credenciales válidas, redirigir al usuario a la página de administrador
+            session_start();
+            $_SESSION['user'] = $user; 
             header("Location: vista_admin.php");
             exit();
         } else {
-            $message = 'Credenciales incorrectas. Por favor, inténtalo de nuevo.';
+            $message = 'Credenciales Invalidas. Intente de nuevo.';
         }
     } catch (PDOException $e) {
-        die("Error al consultar la base de datos: " . $e->getMessage());
+        die("Error en la base de datos: " . $e->getMessage());
     }
 }
 ?>
@@ -29,14 +32,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html>
 
 <head>
-    <title>Inicio de Sesion</title>
+    <title>Inicio de Sesión</title>
     <link rel="stylesheet" href="../style/style.css">
+    <link rel="stylesheet" href="output.css">
 </head>
 
 <body>
     <div class="header bg-green-600 flex justify-between">
         <div class="    ">
-            <a href="index.php"><button type="button" class="text-white bg-black hover:700 font-bold py-2 px-4 rounded">Inicio</button></a>
+            <a href="index.php"><button type="button" class="text-white bg-black hover:bg-gray-700 font-bold py-2 px-4 rounded">Inicio</button></a>
         </div>
         <div class="flex justify-center mg-lg-20">
             <img class="my-0 transition duration-300 transform hover:scale-110" src="../img/UTTN_princ.png" alt="Logo" style="width: 150px; height: auto;">
@@ -44,11 +48,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
     <h1>Inicio de Sesión</h1>
 
-    <?php if (isset($message)) : ?>
+    <?php if (!empty($message)) : ?>
         <p><?php echo $message; ?></p>
     <?php endif; ?>
 
-    <form method="POST" class="custom-form" action="vista_admin.php">
+    <form method="POST" class="custom-form">
 
         <label class="content-center">Usuario</label>
         <input type="text" name="user" placeholder="Usuario" required><br><br>

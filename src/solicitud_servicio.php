@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $url = "http://localhost/biblioteca/src/index.php";
             $tiempoespera = 1;
             header("refresh: $tiempoespera; url=$url");
-            exit(); // Agrega esta línea para evitar que el resto del código se ejecute después de la redirección
+            exit(); 
         } else {
             $message = 'Ha ocurrido un error al solictar el servicio';
         }
@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 try {
     $sql = "SELECT id_servicio, nombre_servicio FROM servicios";
-    $result = $dbh->query($sql); // Use the PDO connection object to execute the query
+    $result = $dbh->query($sql);
 } catch (PDOException $e) {
     die("Error en la consulta de servicios: " . $e->getMessage());
 }
@@ -44,13 +44,14 @@ try {
 
 <head>
     <title>Solicitud de Servicio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="../style/style.css">
-    
+    <link rel="stylesheet" href="output.css">
 </head>
 
-<body class="">
+<body>
         <div class="header bg-green-600 flex justify-between">
-            <div class="    ">
+            <div>
                 <a href="index.php"><button type="button" class="text-white bg-black hover:700 font-bold py-2 px-4 rounded">Inicio</button></a>
             </div>
             <div class="flex justify-center">
@@ -65,7 +66,7 @@ try {
         <?php
         echo '<label>Servicio:</label>';
         echo '<select name="servicio" required id="servicioDropdown">';
-        while ($row = $result->fetch(PDO::FETCH_ASSOC)) { // Use fetch() method to fetch each row
+        while ($row = $result->fetch(PDO::FETCH_ASSOC)) { 
             echo '<option value="' . $row['id_servicio'] . '">' . $row['nombre_servicio'] . '</option>';
         }
         echo '</select>'; ?><br><br>
