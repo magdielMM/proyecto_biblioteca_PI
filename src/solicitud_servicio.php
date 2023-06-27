@@ -45,17 +45,18 @@ try {
 <head>
     <title>Solicitud de Servicio</title>
     <link rel="stylesheet" href="../style/style.css">
+    
 </head>
 
 <body class="">
-    <div class="header bg-green-600 flex justify-between">
-        <div class="    ">
-            <a href="index.php"><button type="button" class="text-white bg-black hover:700 font-bold py-2 px-4 rounded">Inicio</button></a>
+        <div class="header bg-green-600 flex justify-between">
+            <div class="    ">
+                <a href="index.php"><button type="button" class="text-white bg-black hover:700 font-bold py-2 px-4 rounded">Inicio</button></a>
+            </div>
+            <div class="flex justify-center">
+                <img class="my-0 transition duration-300 transform hover:scale-110" src="../img/UTTN_princ.png" alt="Logo" style="width: 150px; height: auto;">
+            </div>
         </div>
-        <div class="flex justify-center">
-            <img class="my-0 transition duration-300 transform hover:scale-110" src="../img/UTTN_princ.png" alt="Logo" style="width: 150px; height: auto;">
-        </div>
-    </div>
     <h1>Solicitud de Servicio</h1>
     <form method="POST" class="custom-form">
         <label>Matrícula:</label>

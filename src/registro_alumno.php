@@ -12,23 +12,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nivel = $_POST['nivel'];
 
     try {
-        $sql = "INSERT INTO alumno (matricula, nombre_alumno, id_carrera, id_especialidad, id_nivel) 
-                VALUES (:matricula, :nombre, :carrera, :especialidad, :nivel)";
-        $stmt = $dbh->prepare($sql);
-        $stmt->bindParam(':matricula', $matricula);
-        $stmt->bindParam(':nombre', $nombre);
-        $stmt->bindParam(':carrera', $carrera);
-        $stmt->bindParam(':especialidad', $especialidad);
-        $stmt->bindParam(':nivel', $nivel);
+        // Verificar si la matrícula ya existe antes de insertarla
+        $checkSql = "SELECT COUNT(*) FROM alumno WHERE matricula = :matricula";
+        $checkStmt = $dbh->prepare($checkSql);
+        $checkStmt->bindParam(':matricula', $matricula);
+        $checkStmt->execute();
+        $count = $checkStmt->fetchColumn();
 
-        if ($stmt->execute()) {
-            $message = 'Se ha creado exitosamente el usuario';
-            $url = "http://localhost/biblioteca/src/index.php";
-            $tiempoespera = 1;
-            header("refresh: $tiempoespera; url=$url");
-            exit(); // Agrega esta línea para evitar que el resto del código se ejecute después de la redirección
+        if ($count > 0) {
+            $message = 'La matrícula ya está registrada';
         } else {
-            $message = 'Ha ocurrido un error al registrar al alumno';
+            // Insertar los datos en la base de datos
+            $insertSql = "INSERT INTO alumno (matricula, nombre_alumno, id_carrera, id_especialidad, id_nivel) 
+                VALUES (:matricula, :nombre, :carrera, :especialidad, :nivel)";
+            $insertStmt = $dbh->prepare($insertSql);
+            $insertStmt->bindParam(':matricula', $matricula);
+            $insertStmt->bindParam(':nombre', $nombre);
+            $insertStmt->bindParam(':carrera', $carrera);
+            $insertStmt->bindParam(':especialidad', $especialidad);
+            $insertStmt->bindParam(':nivel', $nivel);
+
+            if ($insertStmt->execute()) {
+                $message = 'Se ha creado exitosamente el usuario';
+                $url = "http://localhost/biblioteca/src/index.php";
+                $tiempoespera = 1;
+                header("refresh: $tiempoespera; url=$url");
+                exit(); 
+            } else {
+                $message = 'Ha ocurrido un error al registrar al alumno';
+            }
         }
     } catch (PDOException $e) {
         die("Error al guardar el registro: " . $e->getMessage());
@@ -49,24 +61,8 @@ try {
 <head>
     <title>Registro Alumno</title>
     <link rel="stylesheet" href="../style/style.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $('#carreraDropdown').change(function() {
-                var carreraId = $(this).val();
-                $.ajax({
-                    url: 'getEspecialidades.php',
-                    method: 'POST',
-                    data: {
-                        carreraId: carreraId
-                    },
-                    success: function(data) {
-                        $('#especialidadDropdown').html(data);
-                    }
-                });
-            });
-        });
-    </script>
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    
 </head>
 
 <body>
@@ -91,13 +87,15 @@ try {
         </nav>
     </header>
     <h1>Formulario de Alumnos</h1>
+    <?php if (!empty($message)) { ?>
+        <div class="message"><?php echo $message; ?></div>
+    <?php } ?>
     <form method="POST" class="custom-form">
         <label>Matrícula:</label>
         <input type="text" name="matricula" placeholder="Matrícula" required><br><br>
 
         <label>Nombre completo:</label>
         <input type="text" name="nombre" placeholder="Nombre Completo" required><br><br>
-
         <?php
         echo '<label>Carrera:</label>';
         echo '<select name="carrera" required id="carreraDropdown">';
@@ -130,7 +128,24 @@ try {
             <p class="footer-text">© Universidad Tecnológica de Tamaulipas Norte - 2023</p>
         </div>
     </footer>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#carreraDropdown').change(function() {
+                var carreraId = $(this).val();
+                $.ajax({
+                    url: 'getEspecialidades.php',
+                    method: 'POST',
+                    data: {
+                        carreraId: carreraId
+                    },
+                    success: function(data) {
+                        $('#especialidadDropdown').html(data);
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>
