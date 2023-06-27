@@ -34,6 +34,7 @@
             <p class="footer-text">© Universidad Tecnológica de Tamaulipas Norte - 2023</p>
         </div>
     </div>
+    <div></div>
 
 </body>
 
