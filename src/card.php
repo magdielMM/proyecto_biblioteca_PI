@@ -14,27 +14,27 @@ include 'header.php';
 
 <body>
     <div class="flex items-center justify-center">
-        <div class="container mx-15 my-15 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 mb-10">
-            <!-- <div class="card p-8 mx-5">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mb-10">
+            <div class="card p-8 mx-5">
                 <div class="rounded-xl overflow-hidden">
                     <a href="registro_alumno.php" class="hover:bg-transparent"><img src="../img/entrevista.png" alt=""></a>
                 </div>
                 <h5 class="text-2xl mt-3 font-bold text-center">Registro de Alumno</h5>
                 <p class="text-slate-500 text-lg mt-3">Para solicitar un Servicio, primero debes de registrarte como alumno. Este registro de alumno solo se hace una vez.
                 </p>
-            </div> -->
-            <a href="solicitud_servicio.php" class="hover:bg-transparent"><div class="card p-8 mx-5">
+            </div>
+            <div class="card p-8 mx-5">
                 <div class="rounded-xl overflow-hidden">
-                    <img src="../img/PAT.png" alt="">
+                    <a href="registro_salida.php" class="hover:bg-transparent"><img src="../img/PAT.png" alt=""></a>
                 </div>
                 <h5 class="text-2xl mt-3 font-bold text-center">Solicitar Servicio</h5>
                 <p class="text-slate-500 text-lg mt-3"> Puedes solicitar un servicio una vez ya hayas hecho tu registro de alumno.
                 </p>
-            </div></a>
+            </div>
             <div class="card p-8 mx-5">
                 <div class="p-5 flex flex-col">
                     <div class="rounded-xl overflow-hidden">
-                        <a href="registro_salida.php" class="hover:bg-transparent"><img src="../img/entrevistainicial.png" alt=""></a>
+                        <a href="registro_alumno.php" class="hover:bg-transparent"><img src="../img/entrevistainicial.png" alt=""></a>
                     </div>
                     <h5 class="text-2xl mt-3 font-bold text-center">Registrar Salida</h5>
                     <p class="text-slate-500 text-lg mt-3">Cuando termines de utilizar un servicio debes de registrar tu salida.

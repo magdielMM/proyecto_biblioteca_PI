@@ -1,5 +1,6 @@
 <?php
 require '../database/conexion.php';
+include 'header_registros.php';
 
 $message = '';
 
@@ -49,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 try {
     $sql = "SELECT id_carrera, nombre_carrera FROM carrera";
-    $result = $dbh->query($sql); 
+    $result = $dbh->query($sql);
 } catch (PDOException $e) {
     die("Error en la consulta de carreras: " . $e->getMessage());
 }
@@ -65,28 +66,20 @@ try {
 </head>
 
 <body>
-    <div class="header bg-green-600 flex justify-between">
-        <div>
-            <a href="index.php"><button type="button" class="text-white bg-black hover:700 font-bold py-2 px-4 rounded">Inicio</button></a>
-        </div>
-        <div class="flex justify-center">
-            <img class="my-0 transition duration-300 transform hover:scale-110" src="../img/UTTN_princ.png" alt="Logo" style="width: 150px; height: auto;">
-        </div>
-    </div>
-    <h1>Formulario de Alumnos</h1>
+
+    <h1 class="my-8 text-center"><b>Registro de Alumno</b></h1>
     <?php if (!empty($message)) { ?>
-        <div class="message"><?php echo $message; ?></div>
+        <div class="message flex justify-center font-semibold mb-4"><?php echo $message; ?></div>
     <?php } ?>
     <form method="POST" class="custom-form">
         <label>Matrícula:</label>
-        <input type="text" name="matricula" placeholder="Matrícula" required><br><br>
-
+        <input type="text" name="matricula" placeholder="Matrícula" required maxlength="10" minlength="10"><br><br>
         <label>Nombre completo:</label>
         <input type="text" name="nombre" placeholder="Nombre Completo" required><br><br>
         <?php
         echo '<label>Carrera:</label>';
         echo '<select name="carrera" required id="carreraDropdown">';
-        echo '<option value="" disabled selected>Escoge una carrera</option>';
+        echo '<option name="especialidad" value="" disabled selected>Escoge una carrera</option>';
         while ($row = $result->fetch(PDO::FETCH_ASSOC)) { // Use fetch() method to fetch each row
             echo '<option value="' . $row['id_carrera'] . '">' . $row['nombre_carrera'] . '</option>';
         }
@@ -106,15 +99,11 @@ try {
             ?>
         </select>
         <br><br>
-
-        <input class="submit-button" type="submit" value="Guardar">
+        <div class="flex justify-center">
+            <input class="submit-button" type="submit" value="Guardar">
+        </div>
     </form>
     <br><br><br>
-    <footer class="footer">
-        <div class="footer-content">
-            <p class="footer-text">© Universidad Tecnológica de Tamaulipas Norte - 2023</p>
-        </div>
-    </footer>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
@@ -133,6 +122,9 @@ try {
             });
         });
     </script>
+    <?php
+    include 'footer.php';
+    ?>
 </body>
 
 </html>

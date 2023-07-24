@@ -6,7 +6,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registroId'])) {
     $horaSalida = date('Y-m-d H:i:s');
 
     try {
-        $updateSql = "UPDATE registro SET hora_salida = :horaSalida WHERE id_registro = :registroId";
+        $updateSql = "UPDATE registro SET hora_salida = :horaSalida, status = 1 WHERE id_registro = :registroId";
         $updateStmt = $dbh->prepare($updateSql);
         $updateStmt->bindParam(':horaSalida', $horaSalida);
         $updateStmt->bindParam(':registroId', $registroId);
