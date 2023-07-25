@@ -99,7 +99,7 @@ foreach ($result as $row) {
     </form>
     <div class="flex justify-center my-5">
         <form method="POST">
-            <input type="search" name="search_term" id="search-input" placeholder="Buscador" class="border-black rounded bg-gray-100 p-2 text-black placeholder:text-black ml-3" required value="<?php echo isset($searchTerm) ? substr(htmlspecialchars($searchTerm), 1, -1) : ''; ?>">
+            <input type="search" name="search_term" id="buscador" placeholder="Buscador" class="border-black rounded bg-gray-100 p-2 text-black placeholder:text-black ml-3" required value="<?php echo isset($searchTerm) ? substr(htmlspecialchars($searchTerm), 1, -1) : ''; ?>">
             <button type="submit" class="ml-5 px-4 py-2 mt-2 text-white font-bold bg-blue-600 rounded-lg hover:bg-blue-700">Buscar</button>
         </form>
     </div>
@@ -140,7 +140,7 @@ foreach ($result as $row) {
     include 'footer.php';
     ?>
     <script>
-        var inputMatricula = document.querySelector('#search-input');
+        var inputMatricula = document.querySelector('#buscador');
         inputMatricula.addEventListener('input', borrarMatricula);
 
         function borrarMatricula() {
@@ -188,6 +188,35 @@ foreach ($result as $row) {
         const wbout = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
         saveAs(new Blob([wbout], { type: "application/octet-stream" }), "Reporte_de_registros.xlsx");
     });
+
+    document.addEventListener('DOMContentLoaded', function(){
+    //Sleccionar los elementos
+    const inputBuscador = document.querySelector('#buscador');
+    inputBuscador.addEventListener('blur', validar);
+
+    function validar(e){
+
+        if (e.target.value.trim() === '') {
+            mostrarAlerta(`El campo ${e.target.id} es obligatorio`, e.target.parentElement);
+            return;
+        } limpiarAlerta(e.target.parentElement);
+    }
+    function mostrarAlerta(mensaje, referencia) {
+        limpiarAlerta(referencia);
+        const error = document.createElement('P');
+        error.textContent = mensaje;
+        error.classList.add('bg-red-600', 'text-red-500', 'p-2', 'text-center');
+        referencia.appendChild(error);
+    }
+
+    function limpiarAlerta(referencia){
+        const alerta = referencia.querySelector('.bg-red-600');
+        if (alerta) {
+            alerta.remove();
+        }
+        console.log('desde limpiar alerta');
+    }
+});
     </script>
 </body>
 

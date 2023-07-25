@@ -55,10 +55,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form method="POST" class="max-w-md mx-auto p-8 bg-[#E1DDDA] rounded-lg shadow-lg">
         <div>
             <label class="block text-gray-700 text-sm font-bold mb-2">Usuario</label>
-            <input type="text" name="user" placeholder="Usuario" class="w-full px-3 py-2 placeholder-gray-300 border rounded-lg focus:shadow-outline focus:outline-none focus:ring-1 focus:ring-blue-600" required><br><br>
+            <input type="text" name="user" id="usuario" placeholder="Usuario" class="w-full px-3 py-2 placeholder-gray-300 border rounded-lg focus:shadow-outline focus:outline-none focus:ring-1 focus:ring-blue-600" required><br><br>
 
             <label class="block text-gray-700 text-sm font-bold mb-2">Contraseña</label>
-            <input type="password" name="password" placeholder="Contraseña" class="w-full px-3 py-2 placeholder-gray-300 border rounded-lg focus:shadow-outline focus:outline-none focus:ring-1 focus:ring-blue-600" required><br><br><br>
+            <input type="password" id="contraseña" name="password" placeholder="Contraseña" class="w-full px-3 py-2 placeholder-gray-300 border rounded-lg focus:shadow-outline focus:outline-none focus:ring-1 focus:ring-blue-600" required><br><br><br>
         </div>
         <div class="flex justify-center">
             <input class="w-full px-4 py-2 mt-2 text-white font-bold bg-blue-600 rounded-lg hover:bg-blue-700" type="submit" name="login" value="Iniciar Sesión">
@@ -71,5 +71,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ?>
 
 </body>
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+    //Sleccionar los elementos
+    const inputUsuario = document.querySelector('#usuario');
+    const inputContra = document.querySelector('#contraseña');
+    inputUsuario.addEventListener('blur', validar);
+    inputContra.addEventListener('blur', validar)
+
+    function validar(e){
+
+        if (e.target.value.trim() === '') {
+            mostrarAlerta(`El campo ${e.target.id} es obligatorio`, e.target.parentElement);
+            return;
+        } limpiarAlerta(e.target.parentElement);
+    }
+    function mostrarAlerta(mensaje, referencia) {
+        limpiarAlerta(referencia);
+        const error = document.createElement('P');
+        error.textContent = mensaje;
+        error.classList.add('bg-red-600', 'text-red-500', 'p-2', 'text-center');
+        referencia.appendChild(error);
+    }
+
+    function limpiarAlerta(referencia){
+        const alerta = referencia.querySelector('.bg-red-600');
+        if (alerta) {
+            alerta.remove();
+        }
+        console.log('desde limpiar alerta');
+    }
+});
+</script>
 
 </html>

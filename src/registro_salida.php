@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['search_matricula'])) {
         } catch (PDOException $e) {
             die("Error al buscar el registro: " . $e->getMessage());
         }
-    } else {
+    } else{
         $message = "Ingrese su matrícula completa para realizar la búsqueda.";
     }
 }
@@ -52,7 +52,14 @@ try {
         </form>
     </div>
 
-    <?php if (!empty($search_result)) : ?>
+    <?php if (empty($search_result) && !empty($message)) : ?>
+        <div class="flex items-center justify-center mb-10">
+        <h1 class="text-red-500"><?php echo $message; ?></h1>
+    </div>
+    <div id="error-message" class="flex items-center justify-center mb-10">
+    <!-- Aquí se mostrará el mensaje de error -->
+    </div> 
+    <?php elseif (!empty($search_result)) : ?>
         <!-- Mostrar tabla de resultados de búsqueda solo si se encontraron registros -->
         <div class="flex items-center justify-center mb-10">
             <table class="w-full m-10">
@@ -96,6 +103,7 @@ try {
         <div class="flex items-center justify-center mb-10">
             <h1><?php echo $message; ?></h1>
         </div>
+
     <?php endif; ?>
 
     <?php
@@ -127,6 +135,46 @@ try {
                 document.querySelector('form').submit();
             }
         }
+        document.addEventListener('DOMContentLoaded', function() {
+            //Sleccionar los elementos
+            const searchInput = document.querySelector('#search-input');
+            searchInput.addEventListener('blur', validar);
+
+            function validar(e) {
+
+                if (e.target.value.trim() === '') {
+                    mostrarAlerta(`El campo del buscador es obligatorio`, e.target.parentElement);
+                    return;
+                }
+                limpiarAlerta(e.target.parentElement);
+            }
+
+            function mostrarAlerta(mensaje, referencia) {
+                limpiarAlerta(referencia);
+                const error = document.createElement('P');
+                error.textContent = mensaje;
+                error.classList.add('bg-red-600', 'text-red-500', 'p-2', 'text-center');
+                referencia.appendChild(error);
+            }
+
+            function limpiarAlerta(referencia) {
+                const alerta = referencia.querySelector('.bg-red-600');
+                if (alerta) {
+                    alerta.remove();
+                }
+                console.log('desde limpiar alerta');
+            }
+        });
+        function mostrarMensajeError(mensaje) {
+        const errorMessageContainer = document.getElementById('error-message');
+        errorMessageContainer.innerHTML = `<h1 class="text-red-500">${mensaje}</h1>`;
+
+        // Ocultar la tabla de resultados si está visible
+        const tableContainer = document.querySelector('.table-container');
+        if (tableContainer) {
+            tableContainer.style.display = 'none';
+        }
+    }
     </script>
 </body>
 
