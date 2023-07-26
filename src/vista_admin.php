@@ -8,50 +8,31 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 
-$startTime = isset($_POST['start_time']) ? $_POST['start_time'] : '';
-$endTime = isset($_POST['end_time']) ? $_POST['end_time'] : '';
-$searchTerm = isset($_POST['search_term']) ? $_POST['search_term'] : '';
+$startTime = isset($_POST['start_time']) ? date('Y-m-d H:i:s', strtotime($_POST['start_time'])) : null;
+$endTime = isset($_POST['end_time']) ? date('Y-m-d H:i:s', strtotime($_POST['end_time'])) : null;
+$searchTerm = isset($_POST['search_term']) ? $_POST['search_term'] : null;
 
 try {
-    if (!empty($startTime) && !empty($endTime)) {
-        $sql = "SELECT r.id_registro, r.hora_entrada, r.hora_salida, r.matricula, r.nombre, e.nombre_especialidad, s.nombre_servicio
-        FROM registro r
-        INNER JOIN especialidades e ON r.id_especialidad = e.id_especialidad
-        INNER JOIN servicios s ON r.id_servicio = s.id_servicio
-        WHERE r.status = 1 AND r.hora_entrada >= :startTime AND r.hora_salida <= :endTime";
-        $stmt = $dbh->prepare($sql);
-        $stmt->bindParam(':startTime', $startTime);
-        $stmt->bindParam(':endTime', $endTime);
-        $stmt->execute();
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } elseif (!empty($searchTerm)) {
-        $searchTerm = '%' . $searchTerm . '%'; // Agregar '%' al inicio y al final para buscar coincidencias parciales
-        $searchTerm = htmlspecialchars($searchTerm);
-        $sql = "SELECT r.id_registro, r.hora_entrada, r.hora_salida, r.matricula, r.nombre, e.nombre_especialidad, s.nombre_servicio
-        FROM registro r
-        INNER JOIN especialidades e ON r.id_especialidad = e.id_especialidad
-        INNER JOIN servicios s ON r.id_servicio = s.id_servicio
-        WHERE r.status = 1 AND (r.matricula LIKE :searchTerm OR r.nombre LIKE :searchTerm 
-        OR e.nombre_especialidad LIKE :searchTerm OR s.nombre_servicio LIKE :searchTerm 
-        OR r.hora_entrada LIKE :searchTerm OR r.hora_salida LIKE :searchTerm)";
-        $stmt = $dbh->prepare($sql);
-        $stmt->bindParam(':searchTerm', $searchTerm);
-        $stmt->execute();
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } else {
-        $result = []; // Array vacío si no se proporciona ninguna opción de búsqueda
+    $sql = "CALL GetRecords(:startTime, :endTime, :searchTerm)";
+    $stmt = $dbh->prepare($sql);
+    $stmt->bindParam(':startTime', $startTime, PDO::PARAM_STR);
+    $stmt->bindParam(':endTime', $endTime, PDO::PARAM_STR);
+    $stmt->bindParam(':searchTerm', $searchTerm, PDO::PARAM_STR);
+    $stmt->execute();
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Obtener los datos agrupados para la descarga en Excel
+    $groupedData = array();
+    foreach ($result as $row) {
+        $servicio = $row['nombre_servicio'];
+        if (isset($groupedData[$servicio])) {
+            $groupedData[$servicio]++;
+        } else {
+            $groupedData[$servicio] = 1;
+        }
     }
 } catch (PDOException $e) {
     die("Error en la consulta de servicios: " . $e->getMessage());
-}
-$groupedData = array();
-foreach ($result as $row) {
-    $servicio = $row['nombre_servicio'];
-    if (isset($groupedData[$servicio])) {
-        $groupedData[$servicio]++;
-    } else {
-        $groupedData[$servicio] = 1;
-    }
 }
 ?>
 
@@ -99,7 +80,7 @@ foreach ($result as $row) {
     </form>
     <div class="flex justify-center my-5">
         <form method="POST">
-            <input type="search" name="search_term" id="buscador" placeholder="Buscador" class="border-black rounded bg-gray-100 p-2 text-black placeholder:text-black ml-3" required value="<?php echo isset($searchTerm) ? substr(htmlspecialchars($searchTerm), 1, -1) : ''; ?>">
+            <input type="search" name="search_term" id="buscador" placeholder="Buscador" class="border-black rounded bg-gray-100 p-2 text-black placeholder:text-black ml-3" required value="<?php echo isset($searchTerm) ? $searchTerm : ''; ?>">
             <button type="submit" class="ml-5 px-4 py-2 mt-2 text-white font-bold bg-blue-600 rounded-lg hover:bg-blue-700">Buscar</button>
         </form>
     </div>
@@ -134,7 +115,7 @@ foreach ($result as $row) {
     <?php endif; ?>
 
     <div class="mt-10 flex justify-center">
-        <button type="button" id="btnExportar" class="mb-10 px-4 py-2 text-white font-bold bg-green-600 rounded-lg hover:bg-blue-700">Descargar Reporte</button>
+        <button type="button" id="btnExportar" class="mb-10 px-4 py-2 text-white font-bold bg-green-600 rounded-lg hover:bg-green-700">Descargar Reporte</button>
     </div>
     <?php
     include 'footer.php';
@@ -205,7 +186,7 @@ foreach ($result as $row) {
         limpiarAlerta(referencia);
         const error = document.createElement('P');
         error.textContent = mensaje;
-        error.classList.add('bg-red-600', 'text-red-500', 'p-2', 'text-center');
+        error.classList.add('bg-white', 'text-red-500', 'p-2', 'text-center');
         referencia.appendChild(error);
     }
 

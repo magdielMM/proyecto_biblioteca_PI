@@ -13,8 +13,8 @@
         $horaEntrada = date('Y-m-d H:i:s'); // Obtener la hora actual
         // Hacer un server reuqest para insertar el nuevo registro
         try {
-            $sql = "INSERT INTO registro (matricula, nombre, id_carrera, id_especialidad, id_servicio, hora_entrada) 
-                VALUES (:matricula, :nombre, :id_carrera, :id_especialidad, :id_servicio, :horaEntrada)";
+            // Llamar al procedimiento almacenado 'insertar_registro'
+            $sql = "CALL insertar_registro(:matricula, :nombre, :id_carrera, :id_especialidad, :id_servicio, :horaEntrada)";
             $stmt = $dbh->prepare($sql);
             $stmt->bindParam(':matricula', $matricula);
             $stmt->bindParam(':nombre', $nombre);
@@ -38,14 +38,20 @@
     }
 
     try {
-        $sql_carrera = "SELECT id_carrera, nombre_carrera FROM carrera";
-        $result_carrera = $dbh->query($sql_carrera);
+        $sql = "CALL obtener_carreras()";
+        $stmt = $dbh->prepare($sql);
+        $stmt->execute();
+        $result_carrera = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $sql_especialidad = "SELECT id_especialidad, nombre_especialidad FROM especialidades";
-        $result_especialidad = $dbh->query($sql_especialidad);
+        $sql = "CALL obtener_especialidades()";
+        $stmt = $dbh->prepare($sql);
+        $stmt->execute();
+        $result_especialidad = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $sql_servicio = "SELECT id_servicio, nombre_servicio FROM servicios";
-        $result_servicio = $dbh->query($sql_servicio);
+        $sql = "CALL obtener_servicios()";
+        $stmt = $dbh->prepare($sql);
+        $stmt->execute();
+        $result_servicio = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
         die("Error en la consulta: " . $e->getMessage());
     }
@@ -82,33 +88,37 @@
             </div>
 
             <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="carreraDropdown">Carrera:</label>
-                <select name="id_carrera" required id="carreraDropdown" class="w-full px-3 py-2 border rounded-lg focus:shadow-outline focus:outline-none focus:ring-1 focus:ring-blue-600">
-                    <option value="" disabled selected>Escoge una carrera</option>
-                    <?php
-                    $carreras = $result_carrera->fetchAll(PDO::FETCH_ASSOC);
-                    foreach ($carreras as $carrera) {
-                        echo '<option value="' . $carrera['id_carrera'] . '">' . $carrera['nombre_carrera'] . '</option>';
-                    }
-                    ?>
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="carrera">Carrera:</label>
+                <select name="id_carrera" required id="carrera" class="w-full px-3 py-2 border rounded-lg focus:shadow-outline focus:outline-none focus:ring-1 focus:ring-blue-600">
+                    <?php if ($result_carrera !== false) : ?>
+                        <option value="" disabled selected>Escoge una carrera</option>
+                        <?php foreach ($result_carrera as $carrera) : ?>
+                            <option value="<?php echo $carrera['id_carrera']; ?>"><?php echo $carrera['nombre_carrera']; ?></option>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </select>
             </div>
 
+
             <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="especialidadDropdown">Especialidad:</label>
-                <select name="id_especialidad" required id="especialidadDropdown" class="w-full px-3 py-2 border rounded-lg focus:shadow-outline focus:outline-none focus:ring-1 focus:ring-blue-600">
+                <label class="block text-gray-700 text-sm font-bold mb-2" for="especialidad">Especialidad:</label>
+                <select name="id_especialidad" required id="especialidad" class="w-full px-3 py-2 border rounded-lg focus:shadow-outline focus:outline-none focus:ring-1 focus:ring-blue-600">
                     <option value="" disabled selected>Escoge una carrera</option>
                 </select>
             </div>
 
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="id_servicio">Servicio:</label>
-                <select name="id_servicio" required class="w-full px-3 py-2 border rounded-lg focus:shadow-outline focus:outline-none focus:ring-1 focus:ring-blue-600">
-                    <?php while ($row = $result_servicio->fetch(PDO::FETCH_ASSOC)) : ?>
-                        <option value="<?php echo $row['id_servicio']; ?>"><?php echo $row['nombre_servicio']; ?></option>
-                    <?php endwhile; ?>
+                <select name="id_servicio" id="servicio" required class="w-full px-3 py-2 border rounded-lg focus:shadow-outline focus:outline-none focus:ring-1 focus:ring-blue-600">
+                    <?php if ($result_servicio !== false) : ?>
+                        <option value="" disabled selected>Escoge un servicio</option>
+                        <?php foreach ($result_servicio as $row) : ?>
+                            <option value="<?php echo $row['id_servicio']; ?>"><?php echo $row['nombre_servicio']; ?></option>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </select>
             </div>
+
 
             <div class="flex justify-center">
                 <input type="submit" value="Guardar" class="w-full px-4 py-2 mt-4 text-white font-bold bg-blue-600 rounded-lg hover:bg-blue-700">
@@ -120,7 +130,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('#carreraDropdown').change(function() {
+            $('#carrera').change(function() {
                 var carreraId = $(this).val();
                 $.ajax({
                     url: 'getEspecialidades.php',
@@ -129,51 +139,50 @@
                         carreraId: carreraId
                     },
                     success: function(data) {
-                        $('#especialidadDropdown').html(data);
+                        $('#especialidad').html(data);
                     }
                 });
             });
         });
     </script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            //Sleccionar los elementos
-            const inputNombre = document.querySelector('#nombre');
-            const inputMatricula = document.querySelector('#matrícula');
-            const carreraDropdown = document.querySelector('#carreraDropdown');
-            const especialidadDropdown = document.querySelector('#especialidadDropdown');
-            const formulario = document.querySelector('#formulario');
-            //Asignar eventos
-            inputNombre.addEventListener('blur', validar);
-            inputMatricula.addEventListener('blur', validar);
-            carreraDropdown.addEventListener('blur', validar);
-            especialidadDropdown.addEventListener('blur', validar);
+    document.addEventListener('DOMContentLoaded', function(){
+    //Sleccionar los elementos
+    const inputMatricula = document.querySelector('#matrícula');
+    const inputNombre = document.querySelector('#nombre');
+    const inputCarrera = document.querySelector('#carrera');
+    const inputEspecialidad = document.querySelector('#especialidad');
+    const inputServicio = document.querySelector('#servicio');
+    inputMatricula.addEventListener('blur', validar);
+    inputNombre.addEventListener('blur', validar);
+    inputCarrera.addEventListener('blur', validar);
+    inputEspecialidad.addEventListener('blur', validar);
+    inputServicio.addEventListener('blur', validar);
+    
 
-            function validar(e) {
+    function validar(e){
 
-                if (e.target.value.trim() === '') {
-                    mostrarAlerta(`El campo ${e.target.id} es obligatorio`, e.target.parentElement);
-                    return;
-                }
-                limpiarAlerta(e.target.parentElement);
-            }
+        if (e.target.value.trim() === '') {
+            mostrarAlerta(`El campo ${e.target.id} es obligatorio`, e.target.parentElement);
+            return;
+        } limpiarAlerta(e.target.parentElement);
+    }
+    function mostrarAlerta(mensaje, referencia) {
+        limpiarAlerta(referencia);
+        const error = document.createElement('P');
+        error.textContent = mensaje;
+        error.classList.add('bg-red-600', 'text-white', 'p-2', 'text-center');
+        referencia.appendChild(error);
+    }
 
-            function mostrarAlerta(mensaje, referencia) {
-                limpiarAlerta(referencia);
-                const error = document.createElement('P');
-                error.textContent = mensaje;
-                error.classList.add('bg-red-600', 'text-red-500', 'p-2', 'text-center');
-                referencia.appendChild(error);
-            }
-
-            function limpiarAlerta(referencia) {
-                const alerta = referencia.querySelector('.bg-red-600');
-                if (alerta) {
-                    alerta.remove();
-                }
-                console.log('desde limpiar alerta');
-            }
-        });
+    function limpiarAlerta(referencia){
+        const alerta = referencia.querySelector('.bg-red-600');
+        if (alerta) {
+            alerta.remove();
+        }
+        console.log('desde limpiar alerta');
+    }
+});
     </script>
 
     </html>

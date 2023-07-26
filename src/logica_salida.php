@@ -3,15 +3,13 @@ require '../database/conexion.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registroId'])) {
     $registroId = $_POST['registroId'];
-    $horaSalida = date('Y-m-d H:i:s');
 
     try {
-        $updateSql = "UPDATE registro SET hora_salida = :horaSalida, status = 1 WHERE id_registro = :registroId";
-        $updateStmt = $dbh->prepare($updateSql);
-        $updateStmt->bindParam(':horaSalida', $horaSalida);
-        $updateStmt->bindParam(':registroId', $registroId);
+        // Llamar al procedimiento almacenado "RegistrarSalida"
+        $stmt = $dbh->prepare("CALL RegistrarSalida(:registroId)");
+        $stmt->bindParam(':registroId', $registroId, PDO::PARAM_INT);
 
-        if ($updateStmt->execute()) {
+        if ($stmt->execute()) {
             echo "Salida registrada correctamente";
         } else {
             echo "Error al registrar la salida";
@@ -21,5 +19,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['registroId'])) {
     }
 } else {
     echo "Solicitud no válida";
-} 
+}
 ?>

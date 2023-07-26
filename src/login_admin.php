@@ -9,23 +9,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'];
 
     try {
-        $sql = "SELECT * FROM user WHERE user = :user";
-        $stmt = $dbh->prepare($sql);
+        // Llamar al procedimiento almacenado para obtener el hash de la contraseña
+        $stmt = $dbh->prepare("CALL GetPasswordHash(:user, @password_hash)");
         $stmt->bindParam(':user', $user);
         $stmt->execute();
 
-        if ($stmt->rowCount() > 0) {
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            $hashedPassword = $row['password_user'];
+        // Obtener el hash de la contraseña del resultado del procedimiento almacenado
+        $stmt = $dbh->query("SELECT @password_hash AS password_hash");
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $hashedPassword = $result['password_hash'];
 
-            if (password_verify($password, $hashedPassword)) {
-                session_start();
-                $_SESSION['user'] = $user;
-                header("Location: index_admin.php");
-                exit();
-            } else {
-                $message = 'Credenciales Inválidas. Intente de nuevo.';
-            }
+        // Verificar la contraseña utilizando password_verify() en PHP
+        if (password_verify($password, $hashedPassword)) {
+            session_start();
+            $_SESSION['user'] = $user;
+            header("Location: index_admin.php");
+            exit();
         } else {
             $message = 'Credenciales Inválidas. Intente de nuevo.';
         }
@@ -34,7 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
 
 <!DOCTYPE html>
 <html>
@@ -71,6 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ?>
 
 </body>
+
 <script>
     document.addEventListener('DOMContentLoaded', function(){
     //Sleccionar los elementos
@@ -90,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         limpiarAlerta(referencia);
         const error = document.createElement('P');
         error.textContent = mensaje;
-        error.classList.add('bg-red-600', 'text-red-500', 'p-2', 'text-center');
+        error.classList.add('bg-red-600', 'text-white', 'p-2', 'text-center');
         referencia.appendChild(error);
     }
 

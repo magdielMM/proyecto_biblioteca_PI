@@ -5,7 +5,8 @@ if (isset($_POST['carreraId'])) {
     $carreraId = $_POST['carreraId'];
 
     try {
-        $sql = "SELECT id_especialidad, nombre_especialidad FROM especialidades WHERE id_carrera = :carreraId";
+        // Llamar al procedimiento almacenado 'obtener_especialidades_por_carrera'
+        $sql = "CALL obtener_especialidades_por_carrera(:carreraId)";
         $stmt = $dbh->prepare($sql);
         $stmt->bindParam(':carreraId', $carreraId);
         $stmt->execute();
@@ -20,4 +21,3 @@ if (isset($_POST['carreraId'])) {
     }
 }
 ?>
-    

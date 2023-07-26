@@ -4,30 +4,23 @@ require '../database/conexion.php';
 $message = '';
 $search_result = [];
 
+// Verificar si se está realizando una búsqueda por matrícula (método GET)
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['search_matricula'])) {
     $search_matricula = $_GET['search_matricula'];
     if (!empty($search_matricula) && strlen($search_matricula) === 10) {
-        $searchSql = "SELECT id_registro, hora_entrada, hora_salida, matricula, id_servicio FROM registro WHERE matricula LIKE :matricula AND status = 0";
-        $searchStmt = $dbh->prepare($searchSql);
-        $searchStmt->bindValue(':matricula', '%' . $search_matricula . '%');
         try {
-            $searchStmt->execute();
-            $search_result = $searchStmt->fetchAll(PDO::FETCH_ASSOC);
+            // Llamar al procedimiento almacenado "BuscarRegistroPorMatricula"
+            $stmt = $dbh->prepare("CALL BuscarRegistroPorMatricula(:matricula)");
+            $stmt->bindParam(':matricula', $search_matricula, PDO::PARAM_STR);
+            $stmt->execute();
+            $search_result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             die("Error al buscar el registro: " . $e->getMessage());
         }
-    } else{
+    } else {
         $message = "Ingrese su matrícula completa para realizar la búsqueda.";
     }
 }
-
-try {
-    $sql = "SELECT id_registro, hora_entrada, hora_salida, matricula, id_servicio FROM registro WHERE status = 0";
-    $result = $dbh->query($sql); // Use the PDO connection object to execute the query
-} catch (PDOException $e) {
-    die("Error en la consulta de servicios: " . $e->getMessage());
-}
-
 ?>
 
 <!DOCTYPE html>
@@ -53,12 +46,10 @@ try {
     </div>
 
     <?php if (empty($search_result) && !empty($message)) : ?>
+        <!-- Mostrar mensaje de error de búsqueda -->
         <div class="flex items-center justify-center mb-10">
-        <h1 class="text-red-500"><?php echo $message; ?></h1>
-    </div>
-    <div id="error-message" class="flex items-center justify-center mb-10">
-    <!-- Aquí se mostrará el mensaje de error -->
-    </div> 
+            <h1 class="bg-red-600 text-white p-2 text-center"><?php echo $message; ?></h1>
+        </div>
     <?php elseif (!empty($search_result)) : ?>
         <!-- Mostrar tabla de resultados de búsqueda solo si se encontraron registros -->
         <div class="flex items-center justify-center mb-10">
@@ -72,45 +63,44 @@ try {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($search_result as $row) : ?>
-                        <tr class="bg-white">
-                            <td class="text-center p-3 text-sm text-gray-700"><?php echo $row['matricula']; ?></td>
-                            <?php
-                            $servicioId = $row['id_servicio'];
-                            $servicioSql = "SELECT nombre_servicio FROM servicios WHERE id_servicio = :servicioId";
-                            $servicioStmt = $dbh->prepare($servicioSql);
-                            $servicioStmt->bindParam(':servicioId', $servicioId);
-                            $servicioStmt->execute();
-                            $servicioRow = $servicioStmt->fetch(PDO::FETCH_ASSOC);
-                            $nombreServicio = $servicioRow['nombre_servicio'];
-                            ?>
-                            <td class="text-center p-3 text-sm text-gray-700"><?php echo $nombreServicio; ?></td>
-                            <td class="text-center p-3 text-sm text-gray-700"><?php echo $row['hora_entrada']; ?></td>
-                            <td class="text-center p-3 text-sm text-gray-700">
-                                <?php if (!empty($row['hora_salida'])) { ?>
-                                    <button type="button" class="w-full px-4 py-2 mt-2 text-white font-bold bg-blue-600 rounded-lg hover:bg-blue-700" onclick="registrarSalida(<?php echo $row['id_registro']; ?>)">Salida</button>
-                                <?php } else { ?>
-                                    <h2>No se puede encontrar la salida</h2>
-                                <?php } ?>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
+                <?php foreach ($search_result as $row) : ?>
+                    <tr class="bg-white">
+                        <td class="text-center p-3 text-sm text-gray-700"><?php echo $row['matricula']; ?></td>
+                        <?php
+                        $servicioId = $row['id_servicio'];
+                        // Llamar al procedimiento almacenado "ObtenerNombreServicio"
+                        $stmt = $dbh->prepare("CALL ObtenerNombreServicio(:servicioId, @nombreServicio)");
+                        $stmt->bindParam(':servicioId', $servicioId, PDO::PARAM_INT);
+                        $stmt->execute();
+                        $stmt->closeCursor();
+
+                        // Obtener el resultado del procedimiento almacenado
+                        $stmt = $dbh->query("SELECT @nombreServicio as nombreServicio");
+                        $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+                        $nombreServicio = $resultado['nombreServicio'];
+                        ?>
+                        <td class="text-center p-3 text-sm text-gray-700"><?php echo $nombreServicio; ?></td>
+                        <td class="text-center p-3 text-sm text-gray-700"><?php echo $row['hora_entrada']; ?></td>
+                        <td class="text-center p-3 text-sm text-gray-700">
+                            <?php if (!empty($row['hora_salida'])) { ?>
+                                <button type="button" class="w-full px-4 py-2 mt-2 text-white font-bold bg-blue-600 rounded-lg hover:bg-blue-700" onclick="registrarSalida(<?php echo $row['id_registro']; ?>)">Salida</button>
+                            <?php } else { ?>
+                                <h2>No se puede encontrar la salida</h2>
+                            <?php } ?>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
             </table>
         </div>
-    <?php elseif (!empty($message)) : ?>
-        <!-- Mostrar mensaje de error si la matrícula ingresada no tiene 10 caracteres -->
-        <div class="flex items-center justify-center mb-10">
-            <h1><?php echo $message; ?></h1>
-        </div>
-
     <?php endif; ?>
 
     <?php
     include 'footer.php';
     ?>
+
     <script>
-        function registrarSalida(registroId) {
+         function registrarSalida(registroId) {
             // Envía una solicitud AJAX al servidor para guardar la hora de salida
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function() {
@@ -125,6 +115,7 @@ try {
             xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             xhttp.send("marcarSalida=1&registroId=" + registroId);
         }
+
         var inputMatricula = document.querySelector('#search-input');
         inputMatricula.addEventListener('input', borrarMatricula);
 
@@ -153,7 +144,7 @@ try {
                 limpiarAlerta(referencia);
                 const error = document.createElement('P');
                 error.textContent = mensaje;
-                error.classList.add('bg-red-600', 'text-red-500', 'p-2', 'text-center');
+                error.classList.add('bg-red-600', 'text-white', 'p-2', 'text-center', 'ml-2');
                 referencia.appendChild(error);
             }
 
