@@ -1,5 +1,6 @@
 <?php
-require '../database/conexion.php';
+require_once '../database/Database.php';
+require_once '../database/DatabaseAPI.php';
 
 session_start();
 
@@ -9,42 +10,26 @@ if (!isset($_SESSION['user'])) {
 }
 
 $message = '';
+$db = new DatabaseAPI();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $_POST['user'];
     $password = $_POST['password'];
 
-    // Aplicar el método hash a la contraseña
-    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-
-    try {
-        $checkSql = "SELECT COUNT(*) FROM user WHERE user = :user";
-        $checkStmt = $dbh->prepare($checkSql);
-        $checkStmt->bindParam(':user', $user);
-        $checkStmt->execute();
-        $count = $checkStmt->fetchColumn();
-
-        if ($count == 0) {
-            $sql = "INSERT INTO user (user, password_user) VALUES (:user, :password)";
-            $stmt = $dbh->prepare($sql);
-            $stmt->bindParam(':user', $user);
-            $stmt->bindParam(':password', $hashedPassword);
-
-            if ($stmt->execute()) {
-                $message = 'Registro exitoso.';
-                $message = 'Se ha creado exitosamente el usuario';
-                $url = "http://localhost/biblioteca/src/index_admin.php";
-                $tiempoespera = 2;
-                header("refresh: $tiempoespera; url=$url");
-                exit();
-            } else {
-                $message = 'Ha ocurrido un error durante el registro.';
-            }
+    // Verificar si el usuario ya existe
+    if ($db->verificarUsuarioExistente($user)) {
+        $message = 'El usuario ya existe. Intente con otro nombre de usuario.';
+    } else {
+        // Registrar el nuevo administrador
+        if ($db->registrarAdministrador($user, $password)) {
+            $message = 'Se ha creado exitosamente el usuario';
+            $url = "http://localhost/biblioteca/src/index_admin.php";
+            $tiempoespera = 2;
+            header("refresh: $tiempoespera; url=$url");
+            exit();
         } else {
-            $message = 'El usuario ya existe. Intente con otro nombre de usuario.';
+            $message = 'Ha ocurrido un error durante el registro.';
         }
-    } catch (PDOException $e) {
-        die("Error en la base de datos: " . $e->getMessage());
     }
 }
 ?>

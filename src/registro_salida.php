@@ -1,6 +1,7 @@
 <?php
-require '../database/conexion.php';
-
+require_once '../database/Database.php';
+require_once '../database/DatabaseAPI.php';
+$dbAPI = new DatabaseAPI();
 $message = '';
 $search_result = [];
 
@@ -9,11 +10,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['search_matricula'])) {
     $search_matricula = $_GET['search_matricula'];
     if (!empty($search_matricula) && strlen($search_matricula) === 10) {
         try {
-            // Llamar al procedimiento almacenado "BuscarRegistroPorMatricula"
-            $stmt = $dbh->prepare("CALL BuscarRegistroPorMatricula(:matricula)");
-            $stmt->bindParam(':matricula', $search_matricula, PDO::PARAM_STR);
-            $stmt->execute();
-            $search_result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            // Llamar al método obtenerRegistroPorMatricula de la API
+            $search_result = $dbAPI->obtenerRegistroPorMatricula($search_matricula);
         } catch (PDOException $e) {
             die("Error al buscar el registro: " . $e->getMessage());
         }
@@ -65,19 +63,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['search_matricula'])) {
                 <tbody>
                 <?php foreach ($search_result as $row) : ?>
                     <tr class="bg-white">
-                        <td class="text-center p-3 text-sm text-gray-700"><?php echo $row['matricula']; ?></td>
+                    <td class="text-center p-3 text-sm text-gray-700"><?php echo $row['matricula']; ?></td>
                         <?php
-                        $servicioId = $row['id_servicio'];
-                        // Llamar al procedimiento almacenado "ObtenerNombreServicio"
-                        $stmt = $dbh->prepare("CALL ObtenerNombreServicio(:servicioId, @nombreServicio)");
-                        $stmt->bindParam(':servicioId', $servicioId, PDO::PARAM_INT);
-                        $stmt->execute();
-                        $stmt->closeCursor();
-
-                        // Obtener el resultado del procedimiento almacenado
-                        $stmt = $dbh->query("SELECT @nombreServicio as nombreServicio");
-                        $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
-                        $nombreServicio = $resultado['nombreServicio'];
+                        // Llamar al método obtenerNombreServicio de la API
+                        $nombreServicio = $dbAPI->obtenerNombreServicio($row['id_servicio']);
                         ?>
                         <td class="text-center p-3 text-sm text-gray-700"><?php echo $nombreServicio; ?></td>
                         <td class="text-center p-3 text-sm text-gray-700"><?php echo $row['hora_entrada']; ?></td>

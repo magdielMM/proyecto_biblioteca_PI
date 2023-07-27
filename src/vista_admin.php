@@ -1,5 +1,6 @@
 <?php
-require '../database/conexion.php';
+require_once '../database/Database.php';
+require_once '../database/DatabaseAPI.php';
 
 session_start();
 
@@ -13,13 +14,10 @@ $endTime = isset($_POST['end_time']) ? date('Y-m-d H:i:s', strtotime($_POST['end
 $searchTerm = isset($_POST['search_term']) ? $_POST['search_term'] : null;
 
 try {
-    $sql = "CALL GetRecords(:startTime, :endTime, :searchTerm)";
-    $stmt = $dbh->prepare($sql);
-    $stmt->bindParam(':startTime', $startTime, PDO::PARAM_STR);
-    $stmt->bindParam(':endTime', $endTime, PDO::PARAM_STR);
-    $stmt->bindParam(':searchTerm', $searchTerm, PDO::PARAM_STR);
-    $stmt->execute();
-    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $db = new DatabaseAPI();
+
+    // Llamamos al método correspondiente en la API para obtener los registros
+    $result = $db->getRecords($startTime, $endTime, $searchTerm);
 
     // Obtener los datos agrupados para la descarga en Excel
     $groupedData = array();

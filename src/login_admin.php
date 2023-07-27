@@ -1,5 +1,6 @@
 <?php
-require '../database/conexion.php';
+require_once '../database/Database.php';
+require_once '../database/DatabaseAPI.php';
 include 'header_registros.php';
 
 $message = '';
@@ -8,16 +9,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $_POST['user'];
     $password = $_POST['password'];
 
-    try {
-        // Llamar al procedimiento almacenado para obtener el hash de la contraseña
-        $stmt = $dbh->prepare("CALL GetPasswordHash(:user, @password_hash)");
-        $stmt->bindParam(':user', $user);
-        $stmt->execute();
+    // Crear una instancia de la clase DatabaseAPI
+    $databaseAPI = new DatabaseAPI();
 
-        // Obtener el hash de la contraseña del resultado del procedimiento almacenado
-        $stmt = $dbh->query("SELECT @password_hash AS password_hash");
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        $hashedPassword = $result['password_hash'];
+    try {
+        // Llamar al método obtenerPasswordHash de la API para obtener el hash de la contraseña
+        $hashedPassword = $databaseAPI->obtenerPasswordHash($user);
 
         // Verificar la contraseña utilizando password_verify() en PHP
         if (password_verify($password, $hashedPassword)) {
