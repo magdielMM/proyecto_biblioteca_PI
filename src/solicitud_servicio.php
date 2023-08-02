@@ -14,17 +14,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $horaEntrada = date('Y-m-d H:i:s'); // Obtener la hora actual
 
     // Hacer la llamada a la API para insertar el nuevo registro
-    $inserted = $dbAPI->insertarSolicitudServicio($matricula, $nombre, $id_carrera, $id_especialidad, $id_servicio, $horaEntrada);
+    $insertResult = $dbAPI->insertarSolicitudServicio($matricula, $nombre, $id_carrera, $id_especialidad, $id_servicio, $horaEntrada);
 
-    if ($inserted) {
+    if ($insertResult === true) {
+        // Si la inserción es exitosa, redireccionar y mostrar mensaje de éxito
         $message = 'Se ha solicitado el servicio exitosamente';
         $url = "http://localhost/biblioteca/src/index.php";
         $tiempoespera = 1;
         header("refresh: $tiempoespera; url=$url");
         exit();
     } else {
-        $message = 'Ha ocurrido un error al solicitar el servicio';
+        // Si hay algún error, mostrar el mensaje de error en $message
+        $message = $insertResult;
     }
+
 }
 
 try {
@@ -53,6 +56,7 @@ try {
     <title>Solicitud de Servicio</title>
     <link rel="stylesheet" href="../style/style.css">
     <link rel="stylesheet" href="output.css">
+    <script src="script.js"></script>
 </head>
 
 <body>
@@ -60,7 +64,7 @@ try {
     <h1 class="my-5 text-center text-2xl font-bold"><b>Solicitud de Servicio</b></h1>
 
     <?php if (!empty($message)) : ?>
-        <p class="text-center text-red-500 font-bold"><?php echo $message; ?></p>
+        <p class="text-center text-red-500 font-bold mb-3"><?php echo $message; ?></p>
     <?php endif; ?>
 
     <form method="POST" id="formulario" class="max-w-md mx-auto p-8 bg-[#E1DDDA] rounded-lg shadow-lg">
@@ -113,62 +117,44 @@ try {
 </body>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function() {
-        $('#carrera').change(function() {
-            var carreraId = $(this).val();
-            $.ajax({
-                url: 'getEspecialidades.php',
-                method: 'POST',
-                data: {
-                    carreraId: carreraId
-                },
-                success: function(data) {
-                    $('#especialidad').html(data);
-                }
-            });
-        });
-    });
-</script>
-<script>
     document.addEventListener('DOMContentLoaded', function() {
-        //Sleccionar los elementos
-        const inputMatricula = document.querySelector('#matrícula');
-        const inputNombre = document.querySelector('#nombre');
-        const inputCarrera = document.querySelector('#carrera');
-        const inputEspecialidad = document.querySelector('#especialidad');
-        const inputServicio = document.querySelector('#servicio');
-        inputMatricula.addEventListener('blur', validar);
-        inputNombre.addEventListener('blur', validar);
-        inputCarrera.addEventListener('blur', validar);
-        inputEspecialidad.addEventListener('blur', validar);
-        inputServicio.addEventListener('blur', validar);
+    //Sleccionar los elementos
+    const inputMatricula = document.querySelector('#matrícula');
+    const inputNombre = document.querySelector('#nombre');
+    const inputCarrera = document.querySelector('#carrera');
+    const inputEspecialidad = document.querySelector('#especialidad');
+    const inputServicio = document.querySelector('#servicio');
+    inputMatricula.addEventListener('blur', validar);
+    inputNombre.addEventListener('blur', validar);
+    inputCarrera.addEventListener('blur', validar);
+    inputEspecialidad.addEventListener('blur', validar);
+    inputServicio.addEventListener('blur', validar);
 
 
-        function validar(e) {
+    function validar(e) {
 
-            if (e.target.value.trim() === '') {
-                mostrarAlerta(`El campo ${e.target.id} es obligatorio`, e.target.parentElement);
-                return;
-            }
-            limpiarAlerta(e.target.parentElement);
+        if (e.target.value.trim() === '') {
+            mostrarAlerta(`El campo ${e.target.id} es obligatorio`, e.target.parentElement);
+            return;
         }
+        limpiarAlerta(e.target.parentElement);
+    }
 
-        function mostrarAlerta(mensaje, referencia) {
-            limpiarAlerta(referencia);
-            const error = document.createElement('P');
-            error.textContent = mensaje;
-            error.classList.add('bg-red-600', 'text-white', 'p-2', 'text-center');
-            referencia.appendChild(error);
-        }
+    function mostrarAlerta(mensaje, referencia) {
+        limpiarAlerta(referencia);
+        const error = document.createElement('P');
+        error.textContent = mensaje;
+        error.classList.add('bg-red-600', 'text-white', 'p-2', 'text-center');
+        referencia.appendChild(error);
+    }
 
-        function limpiarAlerta(referencia) {
-            const alerta = referencia.querySelector('.bg-red-600');
-            if (alerta) {
-                alerta.remove();
-            }
-            console.log('desde limpiar alerta');
+    function limpiarAlerta(referencia) {
+        const alerta = referencia.querySelector('.bg-red-600');
+        if (alerta) {
+            alerta.remove();
         }
-    });
+        console.log('desde limpiar alerta');
+    }
+});
 </script>
-
 </html>

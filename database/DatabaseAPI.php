@@ -8,23 +8,33 @@ class DatabaseAPI {
         $this->dbh = $db->getDBH();
     }
 
-    public function insertarSolicitudServicio($matricula, $nombre, $id_carrera, $id_especialidad, $id_servicio, $horaEntrada) {
+    public function insertarSolicitudServicio($matricula, $nombre, $id_carrera, $id_especialidad, $id_servicio, $hora_entrada)
+    {
         try {
-            $sql = "CALL insertar_registro(:matricula, :nombre, :id_carrera, :id_especialidad, :id_servicio, :horaEntrada)";
-            $stmt = $this->dbh->prepare($sql);
+            // Llamamos al procedimiento almacenado para insertar el nuevo registro
+            $stmt = $this->dbh->prepare("CALL insertar_solicitud_servicio(:matricula, :nombre, :id_carrera, :id_especialidad, :id_servicio, :hora_entrada)");
             $stmt->bindParam(':matricula', $matricula);
             $stmt->bindParam(':nombre', $nombre);
             $stmt->bindParam(':id_carrera', $id_carrera);
             $stmt->bindParam(':id_especialidad', $id_especialidad);
             $stmt->bindParam(':id_servicio', $id_servicio);
-            $stmt->bindParam(':horaEntrada', $horaEntrada);
+            $stmt->bindParam(':hora_entrada', $hora_entrada);
 
-            return $stmt->execute();
+            // Ejecutamos el procedimiento almacenado
+            $stmt->execute();
+
+            // Si la ejecución es exitosa, devolvemos true
+            return true;
         } catch (PDOException $e) {
-            // Manejar el error en caso de que ocurra.
-            return false;
+            // Si ocurre un error, devolvemos el mensaje de error en la variable $message
+            if ($e->getCode() === '45000') {
+                return "Ya existe una solicitud que no se ha registrado la salida para esta matrícula";
+            } else {
+                return "Error al insertar el registro: " . $e->getMessage();
+            }
         }
     }
+
     public function obtenerCarreras() {
         try {
             $sql = "CALL obtener_carreras()";
@@ -163,5 +173,23 @@ class DatabaseAPI {
             die("Error en la consulta de servicios: " . $e->getMessage());
         }
     }
+    public function obtenerSolicitudServicioPorMatricula($matricula)
+    {
+        try {
+            // Preparar la llamada al procedimiento almacenado
+            $sql = "CALL obtener_solicitud_servicio_por_matricula(:matricula)";
+            $stmt = $this->dbh->prepare($sql);
+            $stmt->bindParam(':matricula', $matricula, PDO::PARAM_STR);
+            $stmt->execute();
 
+            // Obtener el resultado del procedimiento almacenado
+            $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            // Devolver el resultado de la consulta
+            return $resultado;
+        } catch (PDOException $e) {
+            // Manejar el error de la consulta si es necesario
+            die("Error en la consulta: " . $e->getMessage());
+        }
+    }
 }
