@@ -1,5 +1,4 @@
 <?php
-require '../database/conexion.php';
 
 session_start();
 

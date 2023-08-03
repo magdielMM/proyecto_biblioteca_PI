@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <h1 class="my-5 text-center"><b>Inicio de Sesión de Administrador</b></h1>
 
     <?php if (!empty($message)) : ?>
-        <h2 class="flex justify-center m-5"><?php echo $message; ?></h2>
+        <h2 class="flex justify-center m-5 text-red-500"><?php echo $message; ?></h2>
     <?php endif; ?>
 
     <form method="POST" class="max-w-md mx-auto p-8 bg-[#E1DDDA] rounded-lg shadow-lg">
