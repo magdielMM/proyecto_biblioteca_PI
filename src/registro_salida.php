@@ -6,12 +6,17 @@ $message = '';
 $search_result = [];
 
 // Verificar si se está realizando una búsqueda por matrícula (método GET)
+
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['search_matricula'])) {
     $search_matricula = $_GET['search_matricula'];
     if (!empty($search_matricula) && strlen($search_matricula) === 10) {
         try {
             // Llamar al método obtenerRegistroPorMatricula de la API
             $search_result = $dbAPI->obtenerRegistroPorMatricula($search_matricula);
+
+            if (empty($search_result)) {
+                $message = "No se encontraron registros con la matrícula ingresada.";
+            }
         } catch (PDOException $e) {
             die("Error al buscar el registro: " . $e->getMessage());
         }
@@ -20,6 +25,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['search_matricula'])) {
     }
 }
 ?>
+
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -118,15 +126,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['search_matricula'])) {
             //Sleccionar los elementos
             const searchInput = document.querySelector('#search-input');
             searchInput.addEventListener('blur', validar);
-
-            function validar(e) {
-
-                if (e.target.value.trim() === '') {
-                    mostrarAlerta(`El campo del buscador es obligatorio`, e.target.parentElement);
-                    return;
-                }
-                limpiarAlerta(e.target.parentElement);
-            }
 
             function mostrarAlerta(mensaje, referencia) {
                 limpiarAlerta(referencia);

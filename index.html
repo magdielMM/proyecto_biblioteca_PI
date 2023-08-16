@@ -1,140 +1,83 @@
-<!doctype html>
-<html lang="es">
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Como exportar html a excel</title>
-
-    <!-- links para exportar a excel -->
-    <script src="https://unpkg.com/xlsx@0.16.9/dist/xlsx.full.min.js"></script>
-    <script src="https://unpkg.com/file-saverjs@latest/FileSaver.min.js"></script>
-    <script src="https://unpkg.com/tableexport@latest/dist/js/tableexport.min.js"></script>
-
-
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-solid-straight/css/uicons-solid-straight.css'>
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-solid-rounded/css/uicons-solid-rounded.css'>
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-bold-rounded/css/uicons-bold-rounded.css'>
 </head>
+<header>
+    <div class="headerbar">
+        <a href="#" class="logo"><img id="logo" src="assets/img/logo.jpg" alt=""></a>
+    </div>
+</header>
 <body>
-<br><br>
-
-<div class="container">
-    <div class="card">
-        <div class="card-header">
-            Como exportar datos de html a excel
+    <div class="sidenav">
+        <div class="side-header">
+            <p class="side-title">
+                Acciones del administrador
+            </p>
         </div>
-        <div class="card-body">
-            <button id="btnExportar" class="btn btn-success">
-                <i class="fas fa-file-excel"></i> Exportar datos a Excel
-            </button>
-
-            <table id="tabla" class="table table-border table-hover">
-                <thead>
-                <tr>
-                    <th>Nro</th>
-                    <th>Nombre</th>
-                    <th>Apellido</th>
-                    <th>Celular</th>
-                    <th>Año</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>Freddy</td>
-                    <td>Hilari</td>
-                    <td>75657007</td>
-                    <td>25</td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>Freddy</td>
-                    <td>Hilari</td>
-                    <td>75657007</td>
-                    <td>25</td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>Freddy</td>
-                    <td>Hilari</td>
-                    <td>75657007</td>
-                    <td>25</td>
-                </tr>
-                <tr>
-                    <td>4</td>
-                    <td>Freddy</td>
-                    <td>Hilari</td>
-                    <td>75657007</td>
-                    <td>25</td>
-                </tr>
-                <tr>
-                    <td>5</td>
-                    <td>Freddy</td>
-                    <td>Hilari</td>
-                    <td>75657007</td>
-                    <td>25</td>
-                </tr>
-                <tr>
-                    <td>6</td>
-                    <td>Freddy</td>
-                    <td>Hilari</td>
-                    <td>75657007</td>
-                    <td>25</td>
-                </tr>
-                <tr>
-                    <td>7</td>
-                    <td>Freddy</td>
-                    <td>Hilari</td>
-                    <td>75657007</td>
-                    <td>25</td>
-                </tr>
-                <tr>
-                    <td>8</td>
-                    <td>Freddy</td>
-                    <td>Hilari</td>
-                    <td>75657007</td>
-                    <td>25</td>
-                </tr><tr>
-                    <td>9</td>
-                    <td>Freddy</td>
-                    <td>Hilari</td>
-                    <td>75657007</td>
-                    <td>25</td>
-                </tr>
-                <tr>
-                    <td>10</td>
-                    <td>Freddy</td>
-                    <td>Hilari</td>
-                    <td>75657007</td>
-                    <td>25</td>
-                </tr>
-
-                </tbody>
-            </table>
+        <br>
+        <span class="side-link actual-page"><i class="side-icon fi-sr-house-chimney fa-2x"></i><a href="index.html">Inicio</a></span>
+        <span class="side-link"><i class="side-icon fi fi-sr-user"></i><a href="users.html">Usuarios</a></span>
+        <span class="side-link"><i class="side-icon fi-sr-users-alt"></i><a href="employees.html">Empleados</a></span>
+        <span class="side-link"><i class="side-icon fi-br-wheelchair"></i><a href="discapacidades.html">Discapacidades</a></span>
+        <span class="side-link"><i class="side-icon fi-sr-sitemap"></i><a href="puestos.html">Puestos</a></span>
+        <span class="side-link"><i class="side-icon fi-ss-grid"></i><a href="departamentos.html">Departamentos</a></span>
+        <span class="side-link"><i class="side-icon fi-sr-document"></i><a href="documentos.html">Documentos</a></span>
+        <span class="side-link"><i class="side-icon fi-sr-briefcase"></i><a href="bolsa-de-trabajo.html">Bolsa de trabajo</a></span>
+    </div>
+    
+    <div class="main">
+        <div class="nav-bar">
+            <div class="search-bar">
+                <input type="text">
+                <button>Buscar</button>
+            </div>
+            <div class="dropdown">
+                <button class="dropbtn">Filtros
+                </button>
+                <div class="dropdown-content">
+                    <span class="checkbox"><input type="checkbox" name="Opcion 1" id=""><p>Opcion 1</p></span>
+                    <span class="checkbox"><input type="checkbox" name="Opcion 2" id=""><p>Opcion 2</p></span>
+                    <span class="checkbox"><input type="checkbox" name="Opcion 3" id=""><p>Opcion 3</p></span>
+                    <span class="checkbox"><input type="checkbox" name="Opcion 4" id=""><p>Opcion 4</p></span>
+                    <span class="checkbox"><input type="checkbox" name="Opcion 5" id=""><p>Opcion 5</p></span>
+                    <span class="checkbox"><input type="checkbox" name="Opcion 6" id=""><p>Opcion 6</p></span>
+                </div>
+            </div>
+            <div class="acc-section">
+                <span class="account">Hola, admin</span>
+                <button class="log-out">
+                    Cerrar Sesión
+                </button>
+            </div>
+        </div>
+        <div class="allbody">
+            <h2>Tipo de Empleado</h2>
+            <div class="em-grid">
+                <div class="em-card">
+                        <div class="illustration">
+                            <a href="programas-educativos.html"><img src="assets/svg/presentation.png"alt="" class="card-svg"></a>
+                        </div>
+                    <a href="programas-educativos.html" class="card-title"><p>Docentes</p></a>
+                    </div>
+                <div class="em-card">
+                    <div class="illustration">
+                        <a href="programas-educativos.html"><img src="assets/svg/user.png" alt="" class="card-svg"></a>
+                    </div>
+                    <a href="programas-educativos.html" class="card-title"><p>Administrativos</p></a>
+                </div>
+            </div>
         </div>
     </div>
-</div>
-
-
-
-
-
-
-<!-- script para exportar a excel -->
-<script>
-    const $btnExportar = document.querySelector("#btnExportar"),
-        $tabla = document.querySelector("#tabla");
-
-    $btnExportar.addEventListener("click", function() {
-        let tableExport = new TableExport($tabla, {
-            exportButtons: false, // No queremos botones
-            filename: "Reporte de prueba", //Nombre del archivo de Excel
-            sheetname: "Reporte de prueba", //Título de la hoja
-        });
-        let datos = tableExport.getExportData();
-        let preferenciasDocumento = datos.tabla.xlsx;
-        tableExport.export2file(preferenciasDocumento.data, preferenciasDocumento.mimeType, preferenciasDocumento.filename, preferenciasDocumento.fileExtension, preferenciasDocumento.merges, preferenciasDocumento.RTL, preferenciasDocumento.sheetname);
-    });
-</script>
-
+    <footer>
+        Universidad Tecnológica de Tamaulipas Norte. 2023
+    </footer>
 </body>
 </html>

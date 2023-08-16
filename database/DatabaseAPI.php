@@ -1,5 +1,4 @@
 <?php
-
 class DatabaseAPI {
     private $dbh;
 
@@ -192,4 +191,56 @@ class DatabaseAPI {
             die("Error en la consulta: " . $e->getMessage());
         }
     }
+    public function obtenerNombreCarrera($carreraId) {
+        try {
+            $sql = "CALL ObtenerNombreCarrera(:p_id_carrera, @p_nombreCarrera)";
+            $stmt = $this->dbh->prepare($sql);
+            $stmt->bindParam(':p_id_carrera', $carreraId, PDO::PARAM_INT);
+            $stmt->execute();
+    
+            // Obtener el resultado del procedimiento almacenado
+            $stmt = $this->dbh->query("SELECT @p_nombreCarrera as nombre_carrera");
+            $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $resultado['nombre_carrera'];
+        } catch (PDOException $e) {
+            // Manejar el error en caso de que ocurra.
+            return false;
+        }
+    }
+    public function obtenerDatosGraficas() {
+    try {
+        $serviciosData = array();
+        $carrerasData = array();
+
+        // Obtén los datos de las gráficas, similar a como lo hiciste en tu archivo original
+        
+        return array('servicios' => $serviciosData, 'carreras' => $carrerasData);
+    } catch (PDOException $e) {
+        // Maneja el error
+        return false;
+    }
+}
+public function obtenerNombreUsuario($user_id) {
+    try {
+        $sql = "CALL ObtenerNombreUsuario(:p_user_id)";
+        $stmt = $this->dbh->prepare($sql);
+        $stmt->bindParam(':p_user_id', $user_id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($resultado) {
+            return $resultado['user'];
+        } else {
+            return "Nombre de usuario no encontrado";
+        }
+    } catch (PDOException $e) {
+        // Manejar el error en caso de que ocurra.
+        return "Error al obtener el nombre del usuario: " . $e->getMessage();
+    }
+}
+
+
+
+
 }

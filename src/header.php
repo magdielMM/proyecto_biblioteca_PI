@@ -1,7 +1,8 @@
 <header>
-    <div class="header-bar">
-        <div class="flex justify-center">
-            <img src="../img/Image.jpeg" alt="Logo" id="logo">
+<div class="header-bar">
+            <div class="logo">
+                <img src="../img/Image.jpeg" alt="Logo" id="logo">
+            </div>
         </div>
         <div class="mt-2 flex justify-end">
             <a href="login_admin.php" class="flex justify-end"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user flex justify-end" width="44" height="44" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">

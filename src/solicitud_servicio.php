@@ -81,7 +81,7 @@ try {
         <div class="mb-4">
             <label class="block text-gray-700 text-sm font-bold mb-2" for="carrera">Carrera:</label>
             <select name="id_carrera" required id="carrera" class="w-full px-3 py-2 border rounded-lg focus:shadow-outline focus:outline-none focus:ring-1 focus:ring-blue-600">
-                <option value="" disabled selected>Escoge una carrera</option>
+                <option value="" disabled selected>Seleccione una carrera</option>
                 <?php foreach ($carreras as $carrera) : ?>
                     <option value="<?php echo $carrera['id_carrera']; ?>"><?php echo $carrera['nombre_carrera']; ?></option>
                 <?php endforeach; ?>
@@ -91,7 +91,7 @@ try {
         <div class="mb-4">
             <label class="block text-gray-700 text-sm font-bold mb-2" for="especialidad">Especialidad:</label>
             <select name="id_especialidad" required id="especialidad" class="w-full px-3 py-2 border rounded-lg focus:shadow-outline focus:outline-none focus:ring-1 focus:ring-blue-600">
-                <option value="" disabled selected>Escoge una especialidad</option>
+                <option value="" disabled selected>Seleccione una especialidad</option>
                 <?php foreach ($especialidades as $especialidad) : ?>
                     <option value="<?php echo $especialidad['id_especialidad']; ?>"><?php echo $especialidad['nombre_especialidad']; ?></option>
                 <?php endforeach; ?>
@@ -101,7 +101,7 @@ try {
         <div class="mb-4">
             <label class="block text-gray-700 text-sm font-bold mb-2" for="id_servicio">Servicio:</label>
             <select name="id_servicio" id="servicio" required class="w-full px-3 py-2 border rounded-lg focus:shadow-outline focus:outline-none focus:ring-1 focus:ring-blue-600">
-                <option value="" disabled selected>Escoge un servicio</option>
+                <option value="" disabled selected>Seleccione un servicio</option>
                 <?php foreach ($servicios as $servicio) : ?>
                     <option value="<?php echo $servicio['id_servicio']; ?>"><?php echo $servicio['nombre_servicio']; ?></option>
                 <?php endforeach; ?>

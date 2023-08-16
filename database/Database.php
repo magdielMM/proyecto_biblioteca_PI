@@ -1,11 +1,15 @@
 <?php
 class Database {
-    private $host = 'localhost';
+    private $host = 'locahost';
     private $dbName = 'biblioteca_db';
     private $user = 'root';
     private $password = '';
     private $dbh;
-
+// private $host = '172.16.0.105';
+//     private $dbName = 'biblioteca_db';
+//     private $user = 'uttn_alumno1';
+//     private $password = 'radiofax6548';
+//     private $dbh;
     public function __construct() {
         try {
             $this->dbh = new PDO("mysql:host=$this->host;dbname=$this->dbName", $this->user, $this->password);
